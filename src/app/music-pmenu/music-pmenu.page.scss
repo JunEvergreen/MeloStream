@@ -1,0 +1,196 @@
+ion-content {
+  --background: #1c1c1c;
+  color: #ff4d4d;
+}
+
+.center-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+}
+
+#empty-state {
+  text-align: center;
+  padding: 20px;
+
+  ion-icon {
+    font-size: 64px;
+    color: #ff4d4d;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin: 0 0 16px 0;
+  }
+}
+
+.scan-text {
+  color: #ff4d4d;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+ion-toolbar {
+  --background: transparent;
+  --color: #ff4d4d;
+}
+
+ion-tab-bar {
+  --background: #111;
+  color: #888;
+}
+
+ion-tab-button {
+  --color-selected: #ff4d4d;
+}
+
+search-toolbar {
+  --background: transparent;
+  padding: 8px 16px;
+}
+
+.custom-searchbar {
+  --background: rgba(255, 255, 255, 0.1);
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+  --color: white;
+  --icon-color: rgba(255, 255, 255, 0.7);
+  --clear-button-color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+ion-list {
+  background: transparent;
+  padding: 8px;
+}
+
+ion-item {
+  --background: rgba(255, 255, 255, 0.1);
+  --border-radius: 8px;
+  margin-bottom: 8px;
+
+  ion-label {
+    h2 {
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+    }
+    p {
+      color: #888;
+    }
+  }
+
+  ion-thumbnail {
+    --size: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 77, 77, 0.2);
+    border-radius: 4px;
+    margin: 8px 16px 8px 0;
+
+    ion-icon {
+      color: #ff4d4d;
+    }
+  }
+
+  &.playing {
+    --background: rgba(255, 77, 77, 0.1);
+    
+    ion-label h2 {
+      color: #ff4d4d;
+      font-weight: bold;
+    }
+  }
+}
+
+.player-container {
+  position: fixed;
+  bottom: 56px; // Height of the tab bar
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+.player-toolbar {
+  --background: rgba(17, 17, 17, 0.95);
+  --border-color: transparent;
+  padding: 8px;
+
+  .progress-info {
+    margin-bottom: 8px;
+  }
+
+  ion-progress-bar {
+    --progress-background: #ff4d4d;
+    --buffer-background: rgba(255, 77, 77, 0.2);
+  }
+
+  .time-display {
+    color: #888;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  ion-row {
+    margin-top: 4px;
+  }
+
+  ion-thumbnail {
+    --size: 40px;
+    margin: 0;
+    background: rgba(255, 77, 77, 0.2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      color: #ff4d4d;
+    }
+  }
+
+  h6 {
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: white;
+  }
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+
+  .progress-bar-container {
+    padding: 10px 0;
+    cursor: pointer;
+    
+    ion-progress-bar {
+      height: 4px;
+      --buffer-background: rgba(255, 255, 255, 0.2);
+      --progress-background: var(--ion-color-primary);
+    }
+
+    &:hover ion-progress-bar {
+      height: 6px;
+    }
+  }
+}
+
+.streaming-tab {
+  opacity: 0.5;
+  pointer-events: none;
+}

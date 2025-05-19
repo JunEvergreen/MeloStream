@@ -1,0 +1,7 @@
+{
+  "name": "MeloStream",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

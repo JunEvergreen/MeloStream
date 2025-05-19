@@ -1,0 +1,110 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>MeloStream</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-toolbar class="search-toolbar">
+  <ion-searchbar 
+    placeholder="Search local music" 
+    [(ngModel)]="searchTerm" 
+    (ionChange)="searchMusic()"
+    animated="true"
+    class="custom-searchbar">
+  </ion-searchbar>
+</ion-toolbar>
+
+<ion-content [fullscreen]="true">  <div class="center-wrapper" *ngIf="audioFiles.length === 0">
+    <div id="empty-state">
+      <ion-icon name="musical-notes-outline" size="large"></ion-icon>
+      <h2>No Music</h2>
+      <p class="scan-text" (click)="scanAudio()">Scan Audio Files</p>
+    </div>
+  </div>
+
+  <ion-list *ngIf="audioFiles.length > 0">
+    <ion-item *ngFor="let file of filteredFiles" 
+              (click)="playAudio(file)" 
+              [class.playing]="isCurrentTrack(file)"
+              button>
+      <ion-thumbnail slot="start">
+        <ion-icon name="musical-note" size="large"></ion-icon>
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{file.name}}</h2>
+        <p>{{file.type}}</p>
+      </ion-label>
+      <ion-icon *ngIf="isCurrentTrack(file)" 
+                [name]="(playbackState$ | async)?.isPlaying ? 'pause' : 'play'" 
+                slot="end"
+                color="primary">
+      </ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<!-- Player Controls -->
+<div class="player-container" *ngIf="(playbackState$ | async)?.currentTrack">
+  <ion-toolbar class="player-toolbar">    <ion-row class="progress-info">
+      <ion-col size="12">
+        <div class="progress-bar-container" (click)="onProgressBarClick($event)">
+          <ion-progress-bar [value]="getCurrentProgress()"></ion-progress-bar>
+        </div>
+      </ion-col>
+      <ion-col size="6" class="ion-text-start time-display">
+        <small>{{formatTime((playbackState$ | async)?.currentTime || 0)}}</small>
+      </ion-col>
+      <ion-col size="6" class="ion-text-end time-display">
+        <small>{{formatTime((playbackState$ | async)?.duration || 0)}}</small>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="2">
+        <ion-thumbnail>
+          <ion-icon name="musical-note" size="large"></ion-icon>
+        </ion-thumbnail>
+      </ion-col>
+      <ion-col size="7" class="ion-text-center">
+        <ion-text color="light">
+          <h6>{{(playbackState$ | async)?.currentTrack?.name}}</h6>
+        </ion-text>
+      </ion-col>
+      <ion-col size="3" class="ion-text-right">
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-align-items-center ion-justify-content-center player-controls-buttons">
+      <ion-col size="auto">
+        <ion-button fill="clear" (click)="playPrevious()" [disabled]="!canPlayPrevious()">
+          <ion-icon slot="icon-only" name="play-skip-back" color="light"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button fill="clear" (click)="togglePlayPause()">
+          <ion-icon slot="icon-only" 
+                    [name]="(playbackState$ | async)?.isPlaying ? 'pause' : 'play'"
+                    color="light"
+                    size="large"> 
+          </ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button fill="clear" (click)="playNext()" [disabled]="!canPlayNext()">
+          <ion-icon slot="icon-only" name="play-skip-forward" color="light"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</div>
+
+<ion-footer>
+  <ion-tab-bar slot="bottom">    <ion-tab-button [routerLink]="['/music-pmenu']" routerDirection="root">
+      <ion-icon name="musical-note-outline"></ion-icon>
+      <ion-label>Music</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button [routerLink]="['/streaming']" routerDirection="forward">
+      <ion-icon name="cloud-outline"></ion-icon>
+      <ion-label>Streaming</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

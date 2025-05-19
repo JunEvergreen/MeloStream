@@ -1,0 +1,21 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Welcome</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+    <h2>Welcome to <span class="highlight">MeloStream</span></h2>
+    <p>
+      By using <span class="highlight">MeloStream</span>, you agree to the <span class="terms" (click)="showTerms()">terms and conditions</span> of the app. 
+      Please read the guidelines carefully before proceeding.
+    </p>
+    <p>
+      If you do not agree, you may exit the app.
+    </p>
+
+    <ion-button expand="block" color="danger" (click)="agreeAndContinue()">Agree and Continue</ion-button>
+    <ion-button expand="block" color="warning" (click)="onDisagree()">Disagree</ion-button>
+  </div>
+</ion-content>
