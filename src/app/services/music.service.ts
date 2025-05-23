@@ -111,7 +111,9 @@ export class MusicService {
             type: extension,
             size: entry.size || 0,
           });
-        } else if (entry.type === 'directory') {
+        } 
+        
+        else if (entry.type === 'directory') {
           try {
             const subDirContent = await Filesystem.readdir({
               path: entryRelativePath,

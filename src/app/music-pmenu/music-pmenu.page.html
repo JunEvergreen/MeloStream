@@ -75,21 +75,21 @@
     <ion-row class="ion-align-items-center ion-justify-content-center player-controls-buttons">
       <ion-col size="auto">
         <ion-button fill="clear" (click)="playPrevious()" [disabled]="!canPlayPrevious()">
-          <ion-icon slot="icon-only" name="play-skip-back" color="light"></ion-icon>
+          <ion-icon slot="icon-only" name="play-skip-back" color="danger"></ion-icon>
         </ion-button>
       </ion-col>
       <ion-col size="auto">
         <ion-button fill="clear" (click)="togglePlayPause()">
           <ion-icon slot="icon-only" 
                     [name]="(playbackState$ | async)?.isPlaying ? 'pause' : 'play'"
-                    color="light"
+                    color="danger"
                     size="large"> 
           </ion-icon>
         </ion-button>
       </ion-col>
       <ion-col size="auto">
         <ion-button fill="clear" (click)="playNext()" [disabled]="!canPlayNext()">
-          <ion-icon slot="icon-only" name="play-skip-forward" color="light"></ion-icon>
+          <ion-icon slot="icon-only" name="play-skip-forward" color="danger"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { SpotifyService, SpotifyTrack } from '../services/spotify.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { JamendoService, JamendoTrack } from '../services/jamendo.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-streaming',
@@ -7,63 +8,136 @@ import { SpotifyService, SpotifyTrack } from '../services/spotify.service';
   styleUrls: ['./streaming.page.scss'],
   standalone: false
 })
-export class StreamingPage implements OnInit {
-  newReleases: SpotifyTrack[] = [];
-  featuredPlaylists: any[] = [];
+export class StreamingPage implements OnInit, OnDestroy {
+  tracks: JamendoTrack[] = [];
   error: string = '';
   loading: boolean = false;
-  playlistsLoading: boolean = false;
+  currentlyPlaying: JamendoTrack | null = null;
+  audio: HTMLAudioElement | null = null;
+  private searchSubscription: Subscription | null = null;
+  private initialLoadSubscription: Subscription | null = null;
 
-  constructor(private spotifyService: SpotifyService) {}
+  constructor(private jamendoService: JamendoService) {}
+
+  ngOnDestroy() {
+    this.stopAudio();
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+    if (this.initialLoadSubscription) {
+      this.initialLoadSubscription.unsubscribe();
+    }
+  }
+
+  private stopAudio() {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.src = '';
+      this.audio = null;
+    }
+    this.currentlyPlaying = null;
+  }
+
+  playTrack(track: JamendoTrack) {
+    if (this.currentlyPlaying?.id === track.id) {
+      // Pause current track
+      this.stopAudio();
+      return;
+    }
+
+    // Stop current audio if any
+    this.stopAudio();
+
+    // Play new track
+    this.audio = new Audio(track.audio);
+    this.currentlyPlaying = track;
+    
+    this.audio.play().catch(err => {
+      console.error('Audio playback error:', err);
+      this.error = 'Failed to play track';
+      this.currentlyPlaying = null;
+      this.audio = null;
+    });
+
+    // Handle audio ended event
+    this.audio.onended = () => {
+      this.currentlyPlaying = null;
+      this.audio = null;
+    };
+  }
 
   ngOnInit() {
-    this.loadNewReleases();
-    this.loadFeaturedPlaylists();
+    this.loadTracks();
   }
 
-  loadNewReleases() {
+  loadTracks() {
     this.loading = true;
     this.error = '';
-    this.spotifyService.getNewReleases().subscribe({
-      next: (data) => {
-        if (data?.albums?.items) {
-          this.newReleases = data.albums.items;
-        } else {
-          this.error = 'Invalid response format for new releases';
-        }
+    if (this.initialLoadSubscription) {
+      this.initialLoadSubscription.unsubscribe();
+    }
+    this.initialLoadSubscription = this.jamendoService.getRandomTracks(20).subscribe({
+      next: (tracks) => {
+        this.tracks = Array.isArray(tracks) ? tracks : [];
         this.loading = false;
+        if (this.tracks.length === 0) {
+          console.warn('No tracks returned from getRandomTracks or the result was not an array.');
+        }
       },
       error: (err) => {
-        console.error('New releases error:', err);
-        this.error = err.error?.error?.message || 'Failed to load new releases';
+        console.error('Error fetching random tracks:', err);
+        this.error = typeof err === 'string' ? err : 'Failed to load random tracks';
         this.loading = false;
       }
     });
   }
 
-  loadFeaturedPlaylists() {
-    this.playlistsLoading = true;
-    this.spotifyService.getFeaturedPlaylists().subscribe({
-      next: (data) => {
-        if (data?.playlists?.items) {
-          this.featuredPlaylists = data.playlists.items;
-        } else {
-          this.error = this.error ? this.error + '\nInvalid playlists format' : 'Invalid playlists format';
+  handleSearchInput(event: any) {
+    const query = event.target.value?.toLowerCase().trim();
+    
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+    if (this.initialLoadSubscription) {
+      this.initialLoadSubscription.unsubscribe(); // Cancel initial load if a search is performed
+    }
+
+    if (!query || query === '') {
+      this.tracks = []; // Clear current tracks before loading initial ones
+      this.loadTracks(); 
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+    this.tracks = [];
+
+    this.searchSubscription = this.jamendoService.searchTracks(query, 20).subscribe({
+      next: (tracksResponse) => {
+        this.tracks = Array.isArray(tracksResponse) ? tracksResponse : [];
+        this.loading = false;
+        if (this.tracks.length === 0) {
+          this.error = 'No tracks found for your search.';
         }
-        this.playlistsLoading = false;
       },
       error: (err) => {
-        console.error('Playlists error:', err);
-        const playlistError = err.error?.error?.message || 'Failed to load playlists';
-        this.error = this.error ? this.error + '\n' + playlistError : playlistError;
-        this.playlistsLoading = false;
+        console.error('Error searching tracks:', err);
+        this.error = typeof err === 'string' ? err : 'Failed to search tracks';
+        this.loading = false;
       }
     });
+  }
+
+  loadSongs() {
+    this.loadTracks();
   }
 
   retry() {
     this.error = '';
-    this.loadNewReleases();
-    this.loadFeaturedPlaylists();
+    const searchbar = document.querySelector('ion-searchbar');
+    if (searchbar && searchbar.value) {
+        searchbar.value = ''; // Clear search bar
+    }
+    this.loadTracks(); 
   }
 }

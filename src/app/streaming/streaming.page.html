@@ -1,14 +1,18 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/music-pmenu"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Spotify Music</ion-title>
+    <ion-title>Streaming MeloStream</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar 
+      placeholder="Search for songs or artists"
+      (ionInput)="handleSearchInput($event)" 
+      [debounce]="300">
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="spotify-container">
+  <div class="music-container">
     <!-- Error message with retry -->
     <ion-item *ngIf="error" color="danger" class="error-message">
       <ion-icon name="alert-circle" slot="start"></ion-icon>
@@ -17,69 +21,39 @@
         <ion-icon slot="icon-only" name="refresh"></ion-icon>
       </ion-button>
     </ion-item>
-
-    <!-- New Releases -->
-    <ion-list-header>
-      <ion-label>New Releases</ion-label>
-    </ion-list-header>
-    
-    <!-- New Releases Loading -->
+      <!-- Loading Indicator -->
     <div *ngIf="loading" class="loading-container">
       <ion-spinner name="circular"></ion-spinner>
-      <p>Loading new releases...</p>
+      <p>Loading songs...</p>
     </div>
 
-    <!-- New Releases Content -->
-    <ion-grid *ngIf="!loading && newReleases.length > 0">
-      <ion-row>
-        <ion-col size="6" *ngFor="let track of newReleases">
-          <ion-card>
-            <img [src]="track.album.images[0] && track.album.images[0].url" 
-                 [alt]="track.name"
-                 onerror="this.src='assets/default-album.png'">
-            <ion-card-header>
-              <ion-card-subtitle>{{track.artists[0] && track.artists[0].name || 'Unknown Artist'}}</ion-card-subtitle>
-              <ion-card-title>{{track.name}}</ion-card-title>
-            </ion-card-header>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <ion-list *ngIf="!loading && tracks.length > 0">
+      <ion-item *ngFor="let track of tracks" [class.playing]="currentlyPlaying?.id === track.id">
+        <ion-thumbnail slot="start">
+          <img [src]="track.image" 
+               [alt]="track.name"
+               onerror="this.src='assets/default-song.png'">
+        </ion-thumbnail>
+        
+        <ion-label>
+          <h2>{{ track.name }}</h2>
+          <p>{{ track.artist_name }} • {{ track.album_name }}</p>
+          <p class="duration">{{ (track.duration / 60) | number:'1.0-0' }}:{{ (track.duration % 60) | number:'2.0-0' }}</p>
+        </ion-label>
 
-    <!-- Featured Playlists -->
-    <ion-list-header>
-      <ion-label>Featured Playlists</ion-label>
-    </ion-list-header>
-
-    <!-- Playlists Loading -->
-    <div *ngIf="playlistsLoading" class="loading-container">
-      <ion-spinner name="circular"></ion-spinner>
-      <p>Loading playlists...</p>
-    </div>
-
-    <!-- Playlists Content -->
-    <ion-grid *ngIf="!playlistsLoading && featuredPlaylists.length > 0">
-      <ion-row>
-        <ion-col size="6" *ngFor="let playlist of featuredPlaylists">
-          <ion-card>
-            <img [src]="playlist.images[0] && playlist.images[0].url" 
-                 [alt]="playlist.name"
-                 onerror="this.src='assets/default-playlist.png'">
-            <ion-card-header>
-              <ion-card-title>{{playlist.name}}</ion-card-title>
-              <ion-card-subtitle>{{playlist.tracks?.total || 0}} tracks</ion-card-subtitle>
-            </ion-card-header>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
+        <ion-button fill="clear" slot="end" (click)="playTrack(track)">
+          <ion-icon name="play-circle-outline" *ngIf="currentlyPlaying?.id !== track.id"></ion-icon>
+          <ion-icon name="pause-circle-outline" *ngIf="currentlyPlaying?.id === track.id"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>  
+    
     <!-- No Content Message -->
-    <div *ngIf="!loading && !playlistsLoading && newReleases.length === 0 && featuredPlaylists.length === 0 && !error" 
+    <div *ngIf="!loading && tracks.length === 0 && !error" 
          class="center-wrapper">
       <div id="empty-state">
         <ion-icon name="musical-notes-outline" size="large"></ion-icon>
-        <h2>No Content Available</h2>
+        <h2>No Songs Available</h2>
         <p class="scan-text" (click)="retry()">Try Again</p>
       </div>
     </div>

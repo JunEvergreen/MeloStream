@@ -3,6 +3,10 @@ ion-content {
   color: #ff4d4d;
 }
 
+.music-container {
+  padding: 16px;
+}
+
 .center-wrapper {
   display: flex;
   flex-direction: column;
@@ -19,7 +23,7 @@ ion-content {
 
   ion-icon {
     font-size: 64px;
-    color: #1DB954;
+    color: #ff4d4d;
     margin-bottom: 16px;
   }
 
@@ -27,6 +31,15 @@ ion-content {
     color: #ffffff;
     font-size: 24px;
     margin: 0 0 16px 0;
+  }
+
+  .scan-text {
+    color: #ff4d4d;
+    cursor: pointer;
+    
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -103,6 +116,75 @@ ion-list-header {
   p {
     margin-top: 16px;
     color: #888;
+  }
+}
+
+ion-list {
+  background: transparent;
+  padding: 0;
+  margin: 16px 0;
+
+  ion-item {
+    --background: rgba(255, 255, 255, 0.1);
+    --padding-start: 8px;
+    --padding-end: 8px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    
+    &.playing {
+      --background: rgba(255, 77, 77, 0.2);
+      
+      ion-label {
+        h2, p {
+          color: #ff4d4d !important;
+        }
+      }
+    }
+    
+    ion-thumbnail {
+      --size: 60px;
+      margin: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    ion-label {
+      h2 {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      
+      p {
+        color: #888;
+        font-size: 14px;
+        
+        &.duration {
+          font-size: 12px;
+          margin-top: 4px;
+          color: #666;
+        }
+      }
+    }
+    
+    ion-button {
+      height: 48px;
+      width: 48px;
+      
+      ion-icon {
+        font-size: 24px;
+        color: #ff4d4d;
+      }
+    }
+  }
+}
+
+.error-message {
+  margin: 16px 0;
+  border-radius: 8px;
+  
+  ion-icon {
+    margin-right: 8px;
   }
 }
 
